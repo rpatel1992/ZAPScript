@@ -18,13 +18,27 @@ jobs:
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
 
+    - name: Verify ZAP Directory
+      run: |
+        ls -R zap
 
+    - name: Download ZAP Full Scan Script
+      run: |
+        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
 
-    - name: Run OWASP ZAP Full Scan
+    - name: Grant Execute Permissions
+      run: |
+        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh
+        chmod +x zap/zap-full-scan.py
+
+    - name: Start OWASP ZAP Daemon
       run: |
         ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
         sleep 10 # Allow ZAP to start properly
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
+
+    - name: Run OWASP ZAP Full Scan
+      run: |
+        ./zap/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
