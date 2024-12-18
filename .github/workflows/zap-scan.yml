@@ -22,30 +22,35 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # 3. Compile and run the Java application
+      # 3. Debug: List files in the repository
+      - name: Debug File Location
+        run: find . -name "*.java"
+
+      # 4. Compile and Run the Java Application
       - name: Compile and Run Java Application
         run: |
+          cd src # Navigate to the correct directory
           javac SimpleServer.java
           java SimpleServer &
 
-      # 4. Wait for the server to start
+      # 5. Wait for the server to start
       - name: Wait for Server Startup
         run: sleep 10
 
-      # 5. Download and set up OWASP ZAP
+      # 6. Download and set up OWASP ZAP
       - name: Download OWASP ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
           unzip zap.zip -d zap
 
-      # 6. Run OWASP ZAP Security Scan
+      # 7. Run OWASP ZAP Security Scan
       - name: Run ZAP Scan
         run: |
           zap/zap.sh -daemon -port 8081 &
           sleep 10
           zap/zap.sh -quickurl http://localhost:8080 -quickout zap_report.html
 
-      # 7. Upload the ZAP report
+      # 8. Upload the ZAP report
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
