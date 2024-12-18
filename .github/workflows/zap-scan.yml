@@ -28,7 +28,7 @@ jobs:
 
     - name: Grant Execute Permissions
       run: |
-        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh
+        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh || ls -R zap
         chmod +x zap/zap-full-scan.py
 
     - name: Start OWASP ZAP Daemon
