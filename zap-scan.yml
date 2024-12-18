@@ -13,23 +13,16 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-     - name: Login to Docker Hub
-  run: |
-    echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Pull OWASP ZAP Image
+    - name: Install OWASP ZAP
       run: |
-        docker pull owasp/zap2docker-weekly
+        wget https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2_12_0_Linux.tar.gz
+        tar -xzf ZAP_2_12_0_Linux.tar.gz
+        mv ZAP_2_12_0 zap
 
-    - name: Start OWASP ZAP
+    - name: Run OWASP ZAP Passive Scan
       run: |
-        docker run -d --name zap -u zap -p 8080:8080 owasp/zap2docker-weekly
-
-    - name: Perform ZAP Scan
-      run: |
-        docker exec zap zap-full-scan.py \
-          -t http://your-application-url \
-          -r zap-report.html
+        ./zap/zap.sh -daemon -config api.key=12345
+        ./zap/zap-baseline.py -t http://your-application-url -r zap-report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
