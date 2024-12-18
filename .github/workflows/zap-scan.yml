@@ -38,7 +38,7 @@ jobs:
 
     - name: Run OWASP ZAP Full Scan
       run: |
-        ./zap/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
+        ./zap/ZAP_WEEKLY_D-2024-12-09/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
