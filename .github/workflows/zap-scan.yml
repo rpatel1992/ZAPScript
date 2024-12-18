@@ -15,7 +15,7 @@ jobs:
 
     - name: Install OWASP ZAP
       run: |
-        wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0.zip
+        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_2_13_0.zip -d zap
 
     - name: Run OWASP ZAP Passive Scan
