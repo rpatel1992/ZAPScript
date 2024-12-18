@@ -11,41 +11,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
+      # 1. Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Set up Java environment
+      # 2. Set up Java
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # 3. Build and run the application
-      - name: Build and run the application
+      # 3. Compile and run the Java application
+      - name: Compile and Run Java Application
         run: |
-          mvn clean package
-          java -jar target/*.jar &
+          javac SimpleServer.java
+          java SimpleServer &
 
-      # 4. Wait for the application to start
-      - name: Wait for application startup
-        run: sleep 30
+      # 4. Wait for the server to start
+      - name: Wait for Server Startup
+        run: sleep 10
 
-      # 5. Download and extract OWASP ZAP
+      # 5. Download and set up OWASP ZAP
       - name: Download OWASP ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
           unzip zap.zip -d zap
 
-      # 6. Run OWASP ZAP scan
-      - name: Run ZAP Security Scan
+      # 6. Run OWASP ZAP Security Scan
+      - name: Run ZAP Scan
         run: |
-          java -jar zap/zap.jar -daemon -port 8081 &
-          sleep 30
+          zap/zap.sh -daemon -port 8081 &
+          sleep 10
           zap/zap.sh -quickurl http://localhost:8080 -quickout zap_report.html
 
-      # 7. Upload ZAP report as an artifact
+      # 7. Upload the ZAP report
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
