@@ -1,4 +1,4 @@
-name: OWASP ZAP Scan
+name: OWASP ZAP Scan with Java
 
 on:
   push:
@@ -13,33 +13,26 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install OWASP ZAP
+    - name: Install Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11' # Use the Java version your project requires
+
+    - name: Download and Extract ZAP
       run: |
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
 
-    - name: Verify ZAP Directory
+    - name: Start ZAP Daemon
       run: |
-        ls -R zap
+        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=your-api-key &
+        sleep 15 # Wait for ZAP to initialize
 
-    - name: Download ZAP Full Scan Script
+    - name: Build and Run ZAP Java Scan
       run: |
-        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
-        chmod +x zap/zap-full-scan.py
-
-    - name: Grant Execute Permissions
-      run: |
-        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh || ls -R zap
-        chmod +x zap/zap-full-scan.py
-
-    - name: Start OWASP ZAP Daemon
-      run: |
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
-        sleep 10 # Allow ZAP to start properly
-
-    - name: Run OWASP ZAP Full Scan
-      run: |
-        ./zap/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
+        mvn clean install # Build your project
+        java -cp target/your-project.jar ZapScan
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
