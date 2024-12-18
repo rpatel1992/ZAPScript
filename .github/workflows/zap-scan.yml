@@ -22,7 +22,7 @@ jobs:
 
     - name: Run OWASP ZAP Full Scan
       run: |
-        ./zap/zap.sh -daemon -config api.key=cd1271e0aaa94ce34a9554157acddf3e29b672c35065c28259579787ca38a9aa &
+        ./zap/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
         sleep 10 # Allow ZAP to start properly
         ./zap/zap-full-scan.py -t http://your-application-url -r zap_report.html
 
