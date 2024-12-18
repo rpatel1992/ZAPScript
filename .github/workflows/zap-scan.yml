@@ -19,8 +19,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Start OWASP ZAP
-        run: docker run -u zap -p 8080:8080 -d owasp/zap2docker-stable zap.sh -daemon -port 8080
+       # Download and extract OWASP ZAP
+      - name: Download OWASP ZAP
+        run: |
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0.zip -O zap.zip
+          unzip zap.zip -d zap
 
       - name: Build Project
         run: mvn clean package
