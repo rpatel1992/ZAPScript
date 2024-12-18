@@ -17,6 +17,7 @@ jobs:
         run: |
           curl -L -o zap.zip https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
           unzip zap.zip -d zap
+          chmod +x zap/zap.sh
 
       - name: Start ZAP and Run Quick Scan
         run: |
