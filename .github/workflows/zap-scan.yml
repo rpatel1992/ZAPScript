@@ -1,46 +1,28 @@
-name: OWASP ZAP Security Scan
+name: OWASP ZAP Scan
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the Maven project
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Java environment
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'temurin'
+          java-version: '17'
 
-      # Build and run the Maven project
-      - name: Build and Run Application
-        run: |
-          mvn clean package
-          java -jar target/*.jar &
+      - name: Start OWASP ZAP
+        run: docker run -u zap -p 8080:8080 -d owasp/zap2docker-stable zap.sh -daemon -port 8080
 
-      # Download and extract OWASP ZAP
-      - name: Download OWASP ZAP
-        run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0.zip -O zap.zip
-          unzip zap.zip -d zap
+      - name: Build Project
+        run: mvn clean package
 
-      # Run the ZAP scan
-      - name: Run ZAP Security Scan
-        run: bash zap-scan.sh
-
-      # Upload ZAP report as an artifact
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-report
-          path: zap_report.html
+      - name: Run ZAP Integration
+        run: java -jar target/your-app.jar
