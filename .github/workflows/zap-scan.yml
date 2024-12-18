@@ -22,7 +22,7 @@ jobs:
         run: |
           ./zap/zap.sh -daemon -config api.disablekey=true &
           sleep 30
-          ./zap/zap-cli -p 8080 quick-scan http://your-web-application-url
+          ./zap/zap-cli -p 8080 quick-scan https://www.mrtesting.com/
 
       # Upload ZAP report as an artifact
       - name: Upload ZAP Report
