@@ -18,14 +18,7 @@ jobs:
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
 
-    - name: Download ZAP Full Scan Script
-      run: |
-        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
 
-    - name: Grant Execute Permissions
-      run: |
-        chmod +x zap/zap.sh
-        chmod +x zap/zap-full-scan.py
 
     - name: Run OWASP ZAP Full Scan
       run: |
