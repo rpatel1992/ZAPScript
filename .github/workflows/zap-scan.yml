@@ -1,38 +1,53 @@
-name: OWASP ZAP Scan with Java
+name: ZAP Security Scan
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  zap_scan:
+  zap-scan:
     runs-on: ubuntu-latest
 
     steps:
-    # Check out the repository
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    # Start OWASP ZAP Docker container
-    - name: Start OWASP ZAP
-      run: |
-        docker pull owasp/zap2docker-stable
-        docker run -d --name zap -u zap -p 8080:8080 owasp/zap2docker-stable
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
 
-    # Perform ZAP Scan
-    - name: Active Scan
+    - name: Install OWASP ZAP
       run: |
-        docker exec zap zap-full-scan.py \
-          -t http://your-application-url \
-          -r zap-report.html
+        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
+        unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
+		
+	- name: Verify ZAP Directory
+      run: |
+        ls -R zap
 
-    # Upload ZAP Report
-    - name: Upload ZAP Report
+    - name: Download ZAP Full Scan Script
+      run: |
+        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
+        chmod +x zap/zap-full-scan.py
+
+    - name: Grant Execute Permissions
+      run: |
+        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh || ls -R zap
+        chmod +x zap/zap-full-scan.py
+
+    - name: Start OWASP ZAP Daemon
+      run: |
+        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
+        sleep 10 # Allow ZAP to start properly
+
+    - name: Run ZAP Automation Script
+      run: |
+        ./mvnw compile exec:java -Dexec.mainClass="ZapAutomation"
+
+    - name: Upload ZAP Reports
       uses: actions/upload-artifact@v3
       with:
         name: zap-report
-        path: zap-report.html
+        path: target/zap-report.xml
