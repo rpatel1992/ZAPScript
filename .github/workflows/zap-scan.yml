@@ -24,7 +24,7 @@ jobs:
       run: |
         ./zap/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
         sleep 10 # Allow ZAP to start properly
-        ./zap/zap-full-scan.py -t http://your-application-url -r zap_report.html
+        ./zap/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
