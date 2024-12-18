@@ -26,13 +26,13 @@ jobs:
 
     - name: Start ZAP Daemon
       run: |
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=your-api-key &
+        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
         sleep 15 # Wait for ZAP to initialize
 
     - name: Build and Run ZAP Java Scan
       run: |
         mvn clean install # Build your project
-        java -cp target/your-project.jar ZapScan
+        java -cp targetC:\Users\rpatel\git\repository.jar ZapScan
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
