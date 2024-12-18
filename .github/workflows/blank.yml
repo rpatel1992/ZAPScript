@@ -1,0 +1,45 @@
+name: OWASP ZAP Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Start OWASP ZAP in daemon mode
+    - name: Start OWASP ZAP
+      uses: docker://owasp/zap2docker-stable
+      with:
+        args: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true
+
+    # Step 3: Run ZAP spider and active scan
+    - name: Perform ZAP Scan
+      run: |
+        zap-cli --zap-url http://127.0.0.1 --zap-port 8080 quick-scan \
+        --self-contained \
+        --spider \
+        --scan https://<your-application-url>
+      
+    # Step 4: Save and analyze results
+    - name: Save Scan Report
+      run: |
+        mkdir -p zap-reports
+        zap-cli --zap-url http://127.0.0.1 --zap-port 8080 report -o zap-reports/zap-report.html -f html
+
+    # Step 5: Upload scan results
+    - name: Upload Report Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: zap-scan-report
+        path: zap-reports/zap-report.html
