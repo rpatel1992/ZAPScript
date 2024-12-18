@@ -3,7 +3,8 @@
 <suite name="Suite">
   <test thread-count="5" name="Test">
     <classes>
-      <class name="Test.ZAPSecurityTest"/>
+      <!--   <class name="Test.ZAPSecurityTest"/>-->
+      <class name="com.example.ZAPSecurityTest"/>
     <!--  <class name="Test.RegisTest"/>
       <class name="Test.CreateElementTest"/>
       <class name="Test.LoginTest"/>-->
