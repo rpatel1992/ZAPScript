@@ -1,32 +1,53 @@
-name: OWASP ZAP Scan
+name: OWASP ZAP Security Scan
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Set up Java environment
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
-       # Download and extract OWASP ZAP
+      # 3. Build and run the application
+      - name: Build and run the application
+        run: |
+          mvn clean package
+          java -jar target/*.jar &
+
+      # 4. Wait for the application to start
+      - name: Wait for application startup
+        run: sleep 30
+
+      # 5. Download and extract OWASP ZAP
       - name: Download OWASP ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
           unzip zap.zip -d zap
 
-      - name: Build Project
-        run: mvn clean package
+      # 6. Run OWASP ZAP scan
+      - name: Run ZAP Security Scan
+        run: |
+          java -jar zap/zap.jar -daemon -port 8081 &
+          sleep 30
+          zap/zap.sh -quickurl http://localhost:8080 -quickout zap_report.html
 
-      - name: Run ZAP Integration
-        run: java -jar target/your-app.jar
+      # 7. Upload ZAP report as an artifact
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
