@@ -15,7 +15,7 @@ jobs:
 
     - name: Install OWASP ZAP
       run: |
-        wget wget https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2_12_0_Linux.tar.gz
+        curl -I https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2_12_0_Linux.tar.gz
         tar -xzf ZAP_2_12_0_Linux.tar.gz
         mv ZAP_2_12_0 zap
 
