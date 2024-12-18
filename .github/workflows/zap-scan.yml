@@ -24,9 +24,8 @@ jobs:
           sleep 30
           ./zap/zap-cli -p 8080 quick-scan http://your-web-application-url
 
-      - name: Generate and Upload Report
-        run: |
-          ./zap/zap-cli -p 8080 report -o zap_report.html -f html
+      # Upload ZAP report as an artifact
+      - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
