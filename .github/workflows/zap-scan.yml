@@ -18,26 +18,23 @@ jobs:
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
 
-     - name: Verify Files
-  run: |
-    ls -l zap
+    - name: Download ZAP Full Scan Script
+      run: |
+        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
 
-- name: Download ZAP Full Scan Script
-  run: |
-    wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
+    - name: Grant Execute Permissions
+      run: |
+        chmod +x zap/zap.sh
+        chmod +x zap/zap-full-scan.py
 
-- name: Grant Execute Permissions
-  run: |
-    chmod +x zap/zap.sh
-    chmod +x zap/zap-full-scan.py
-
-- name: Run OWASP ZAP Full Scan
-  run: |
-    ./zap/zap.sh -daemon -config api.key=cd1271e0aaa94ce34a9554157acddf3e29b672c35065c28259579787ca38a9aa &
-    ./zap/zap-full-scan.py -t http://your-application-url -r zap_report.html
+    - name: Run OWASP ZAP Full Scan
+      run: |
+        ./zap/zap.sh -daemon -config api.key=cd1271e0aaa94ce34a9554157acddf3e29b672c35065c28259579787ca38a9aa &
+        sleep 10 # Allow ZAP to start properly
+        ./zap/zap-full-scan.py -t http://your-application-url -r zap_report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
       with:
         name: zap-report
-        path: zap-report.html
+        path: zap_report.html
