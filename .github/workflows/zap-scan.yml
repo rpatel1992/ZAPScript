@@ -1,49 +1,45 @@
-name: ZAP Security Scan
+name: OWASP ZAP Security Scan
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the Maven project
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        java-version: '12'
+      # Set up Java environment
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
 
-    - name: Install OWASP ZAP
-      run: |
-        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
-        unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
+      # Build and run the Maven project
+      - name: Build and Run Application
+        run: |
+          mvn clean package
+          java -jar target/*.jar &
 
-    - name: Download ZAP Full Scan Script
-      run: |
-        wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
-        chmod +x zap/zap-full-scan.py
+      # Download and extract OWASP ZAP
+      - name: Download OWASP ZAP
+        run: |
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0.zip -O zap.zip
+          unzip zap.zip -d zap
 
-    - name: Grant Execute Permissions
-      run: |
-        chmod +x zap/ZAP_WEEKLY_D-2024-12-09/zap.sh || ls -R zap
-        chmod +x zap/zap-full-scan.py
+      # Run the ZAP scan
+      - name: Run ZAP Security Scan
+        run: bash zap-scan.sh
 
-    - name: Start OWASP ZAP Daemon
-      run: |
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
-        sleep 10 # Allow ZAP to start properly
-
-    - name: Run ZAP Automation Script
-      run: |
-        ./mvnw compile exec:java -Dexec.mainClass="ZapAutomation"
-
-    - name: Upload ZAP Reports
-      uses: actions/upload-artifact@v3
-      with:
-        name: zap-report
-        path: target/zap-report.xml
+      # Upload ZAP report as an artifact
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
