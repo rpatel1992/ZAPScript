@@ -4,44 +4,35 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
 
     steps:
+    # Check out the repository
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11' # Use the Java version your project requires
-
-    - name: Download and Extract ZAP
+    # Start OWASP ZAP Docker container
+    - name: Start OWASP ZAP
       run: |
-        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
-        unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
+        docker pull owasp/zap2docker-stable
+        docker run -d --name zap -u zap -p 8080:8080 owasp/zap2docker-stable
 
-    - name: Start ZAP Daemon
+    # Perform ZAP Scan
+    - name: Active Scan
       run: |
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
-        sleep 15 # Wait for ZAP to initialize
+        docker exec zap zap-full-scan.py \
+          -t http://your-application-url \
+          -r zap-report.html
 
-    - name: Build and Run ZAP Java Scan
-      run: |
-        mvn clean install # Build your project
-        ls -lh target # List the JAR files in the target directory
-
-    - name: Run ZAP Java Scan
-      run: |
-        jar_file=$(ls target/*.jar | head -n 1)
-        echo "Found JAR file: $jar_file"
-        java -cp "$jar_file" ZapScan
-
+    # Upload ZAP Report
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
       with:
         name: zap-report
-        path: zap_report.html
+        path: zap-report.html
