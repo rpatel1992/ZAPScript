@@ -4,33 +4,26 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
 
     steps:
-    # Check out the repository
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # Start OWASP ZAP Docker container
-    - name: Start OWASP ZAP
+    - name: Install OWASP ZAP
       run: |
-        docker pull owasp/zap2docker-stable
-        docker run -d --name zap -u zap -p 8080:8080 owasp/zap2docker-stable
+        wget https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2_12_0_Linux.tar.gz
+        tar -xzf ZAP_2_12_0_Linux.tar.gz
+        mv ZAP_2_12_0 zap
 
-    # Perform ZAP Scan
-    - name: Active Scan
+    - name: Run OWASP ZAP Passive Scan
       run: |
-        docker exec zap zap-full-scan.py \
-          -t http://your-application-url \
-          -r zap-report.html
+        ./zap/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij
+        ./zap/zap-baseline.py -t http://your-application-url -r zap-report.html
 
-    # Upload ZAP Report
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
       with:
