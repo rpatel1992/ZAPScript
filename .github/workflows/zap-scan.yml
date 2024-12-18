@@ -25,6 +25,7 @@ jobs:
     - name: Download ZAP Full Scan Script
       run: |
         wget -P zap/ https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-full-scan.py
+        chmod +x zap/zap-full-scan.py
 
     - name: Grant Execute Permissions
       run: |
@@ -38,7 +39,7 @@ jobs:
 
     - name: Run OWASP ZAP Full Scan
       run: |
-        ./zap/ZAP_WEEKLY_D-2024-12-09/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
+        ./zap/zap-full-scan.py -t https://www.mrtesting.com/ -r zap_report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
