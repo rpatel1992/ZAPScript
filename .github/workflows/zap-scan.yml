@@ -17,7 +17,6 @@ jobs:
       run: |
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
-        mv ZAP_WEEKLY_D-2024-12-09 zap
 
     - name: Run OWASP ZAP Passive Scan
       run: |
