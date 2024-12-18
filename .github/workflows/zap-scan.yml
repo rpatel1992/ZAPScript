@@ -1,4 +1,4 @@
-name: OWASP ZAP Scan
+name: Custom OWASP ZAP Scan (Java)
 
 on:
   push:
@@ -13,18 +13,34 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    - name: Set Up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11' # Use your desired Java version
+
     - name: Install OWASP ZAP
       run: |
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
         unzip ZAP_WEEKLY_D-2024-12-09.zip -d zap
 
+    - name: Grant Execute Permissions
+      run: |
+        chmod +x zap/zap.sh
 
-
-    - name: Run OWASP ZAP Full Scan
+    - name: Start OWASP ZAP Daemon
       run: |
         ./zap/zap.sh -daemon -config api.key=irmje6k7mttb7dlqmvfvoeqvij &
-        sleep 10 # Allow ZAP to start properly
-        ./zap/zap-full-scan.py -t http://your-application-url -r zap_report.html
+        sleep 10 # Wait for ZAP to initialize
+
+    - name: Compile Java Code
+      run: |
+        mkdir -p build
+        javac -cp zap/zap-client-api-2.12.0.jar -d build src/main/java/CustomZapScan.java
+
+    - name: Run Custom Java ZAP Script
+      run: |
+        java -cp "build:zap/zap-client-api-2.12.0.jar" CustomZapScan
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
