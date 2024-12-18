@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Start OWASP ZAP
         run: docker run -u zap -p 8080:8080 -d owasp/zap2docker-stable zap.sh -daemon -port 8080
