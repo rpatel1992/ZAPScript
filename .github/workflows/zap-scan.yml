@@ -17,8 +17,6 @@ jobs:
       run: |
         wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0.zip
         unzip ZAP_2_13_0.zip -d zap
-        tar -xzf ZAP_2_12_0_Linux.tar.gz
-        mv ZAP_2_12_0 zap
 
     - name: Run OWASP ZAP Passive Scan
       run: |
