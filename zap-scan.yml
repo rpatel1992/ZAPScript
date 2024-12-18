@@ -1,0 +1,38 @@
+name: OWASP ZAP Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Check out the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Start OWASP ZAP Docker container
+    - name: Start OWASP ZAP
+      run: |
+        docker pull owasp/zap2docker-stable
+        docker run -d --name zap -u zap -p 8080:8080 owasp/zap2docker-stable
+
+    # Perform ZAP Scan
+    - name: Active Scan
+      run: |
+        docker exec zap zap-full-scan.py \
+          -t http://your-application-url \
+          -r zap-report.html
+
+    # Upload ZAP Report
+    - name: Upload ZAP Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: zap-report
+        path: zap-report.html
