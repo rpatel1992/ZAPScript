@@ -32,7 +32,13 @@ jobs:
     - name: Build and Run ZAP Java Scan
       run: |
         mvn clean install # Build your project
-        java -cp targetC:\Users\rpatel\git\repository.jar ZapScan
+        ls -lh target # List the JAR files in the target directory
+
+    - name: Run ZAP Java Scan
+      run: |
+        jar_file=$(ls target/*.jar | head -n 1)
+        echo "Found JAR file: $jar_file"
+        java -cp "$jar_file" ZapScan
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
