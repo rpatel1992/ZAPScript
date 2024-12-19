@@ -29,6 +29,11 @@ jobs:
     # 4. Wait for ZAP to start
     - name: Wait for ZAP to start
       run: sleep 30
+   
+    - name: Download zap-baseline.py
+      run: |
+        wget https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-baseline.py -P zap/
+        chmod +x zap/zap-baseline.py
 
     # 5. Run a security scan
     - name: Run ZAP Baseline Scan
