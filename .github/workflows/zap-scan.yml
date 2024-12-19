@@ -18,7 +18,7 @@ jobs:
     # 2. Download and extract OWASP ZAP
     - name: Download OWASP ZAP
       run: |
-        wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2.13.0_Core.zip -O zap.zip
+        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip -O zap.zip
         unzip zap.zip -d zap
 
     # 3. Start OWASP ZAP
