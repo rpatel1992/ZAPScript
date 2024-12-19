@@ -21,26 +21,40 @@ jobs:
         wget https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip -O zap.zip
         unzip zap.zip -d zap
 
-    # 3. Start OWASP ZAP
+    # 3. Install Python Dependencies
+    - name: Install Python Dependencies
+      run: |
+        pip3 install python-owasp-zap-v2.4
+
+    # 4. Start OWASP ZAP
     - name: Start OWASP ZAP
       run: |
         nohup bash zap/zap.sh -daemon -host 127.0.0.1 -port 8080 &
 
-    # 4. Wait for ZAP to start
-    - name: Wait for ZAP to start
-      run: sleep 30
-   
+    # 5. Check ZAP Startup
+    - name: Check ZAP Startup
+      run: |
+        for i in {1..10}; do
+          if nc -zv 127.0.0.1 8080; then
+            echo "ZAP is running!";
+            break;
+          fi;
+          echo "Waiting for ZAP to start...";
+          sleep 10;
+        done
+
+    # 6. Download zap-baseline.py
     - name: Download zap-baseline.py
       run: |
         wget https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-baseline.py -P zap/
         chmod +x zap/zap-baseline.py
 
-    # 5. Run a security scan
+    # 7. Run a security scan
     - name: Run ZAP Baseline Scan
       run: |
         python3 zap/zap-baseline.py -t https://www.mrtesting.com -r zap-report.html
 
-    # 6. Upload the scan report
+    # 8. Upload the scan report
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
       with:
