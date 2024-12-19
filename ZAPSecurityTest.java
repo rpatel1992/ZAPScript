@@ -32,7 +32,6 @@ public class ZapScan {
             // Retrieve and print the results
             String report = new String(api.core.htmlreport());
             System.out.println(report);
-            System.out.println(report);
         } catch (ClientApiException | InterruptedException e) {
             e.printStackTrace();
         }
