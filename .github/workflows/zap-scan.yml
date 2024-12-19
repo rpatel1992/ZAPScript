@@ -1,34 +1,14 @@
-name: OWASP ZAP Scan
-
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  schedule:
+    # Runs every day At 01:00.
+    - cron:  '0 1 * * *'
 
 jobs:
-  zap-scan:
+  zap_scan:
     runs-on: ubuntu-latest
+    name: Scan ZAP website
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Download and Extract OWASP ZAP
-        run: |
-          curl -L -o zap.zip https://github.com/zaproxy/zaproxy/releases/download/w2024-12-09/ZAP_WEEKLY_D-2024-12-09.zip
-          unzip zap.zip -d zap
-          chmod +x zap/zap.sh
-
-      - name: Start ZAP and Run Quick Scan
-        run: |
-          ./zap/zap.sh -daemon -config api.disablekey=true &
-          sleep 30
-          ./zap/zap-cli -p 8080 quick-scan https://www.mrtesting.com/
-
-      # Upload ZAP report as an artifact
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.3.0
         with:
-          name: zap-report
-          path: zap_report.html
-
+          target: 'https://www.mrtesting.com'
